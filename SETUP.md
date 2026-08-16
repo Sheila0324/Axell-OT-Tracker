@@ -158,31 +158,12 @@ git push -u origin main
 
 ## Step 7 — Deploy on Vercel
 
-1. Go to [vercel.com](https://vercel.com) → **Add New Project**
-2. Import your `ot-tracker` GitHub repository
-3. Leave all build settings at defaults (Vercel detects it as a static site)
-4. Under **Environment Variables**, add:
-   - `NEXT_PUBLIC_SUPABASE_URL` → your Supabase Project URL
-   - `NEXT_PUBLIC_SUPABASE_ANON_KEY` → your anon key
-
-   > **Wait** — since this is a plain static site (no build step), Vercel env vars don't automatically inject into JS. Instead, you need to **add a `config.js` file via Vercel's file override feature** or handle it another way.
-
-### Simplest approach for a private family app:
-
-**Option A (recommended for private repos):** Add a real `config.js` to your local folder with actual values, and **add it to git** (safe for a private repo):
-
-```bash
-# In .gitignore, comment out or remove "config.js"
-git add config.js
-git commit -m "Add Supabase config"
-git push
-```
-
-Since the repository is **private**, your keys are not exposed to the public. Vercel will deploy `config.js` as part of the site.
-
-**Option B:** After Vercel deploys, open your Vercel project → **Settings → Functions** and configure rewrites to serve a dynamic config endpoint. (More complex — only needed if you make the repo public.)
-
+1. Go to [vercel.com/new](https://vercel.com/new)
+2. Import your `Sheila0324/Axell-OT-Tracker` GitHub repository
+3. Leave all build settings at defaults (Framework: Other / Static)
+4. **No environment variables needed!** (Your `config.js` is already included in the repository)
 5. Click **Deploy** → wait ~30 seconds → your app is live! 🎉
+
 
 ---
 
