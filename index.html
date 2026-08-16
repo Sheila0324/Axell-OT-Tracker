@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>OT Journal — Session Tracker</title>
+  <meta name="description" content="A private family journal for tracking occupational therapy sessions, activities, and progress." />
+  <meta name="theme-color" content="#C97B4B" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+</head>
+<body>
+
+<div id="app">
+
+  <!-- ═══════════════════════════════════════════════
+       LOGIN VIEW
+  ════════════════════════════════════════════════ -->
+  <div id="view-login" class="view active">
+    <div class="login-bg" aria-hidden="true">
+      <div class="login-blob login-blob-1"></div>
+      <div class="login-blob login-blob-2"></div>
+    </div>
+    <div class="login-container">
+      <div class="login-card">
+        <div class="login-logo" aria-hidden="true">🌱</div>
+        <h1 class="login-title">OT Journal</h1>
+        <p class="login-subtitle">Family's private session tracker</p>
+
+        <form id="login-form" novalidate>
+          <div class="form-group">
+            <label class="form-label" for="login-email">
+              <span class="label-icon">✉️</span> Email
+            </label>
+            <input
+              type="email"
+              id="login-email"
+              class="form-control"
+              placeholder="your@email.com"
+              autocomplete="email"
+              inputmode="email"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="login-password">
+              <span class="label-icon">🔑</span> Password
+            </label>
+            <div class="password-wrap">
+              <input
+                type="password"
+                id="login-password"
+                class="form-control"
+                placeholder="••••••••"
+                autocomplete="current-password"
+                required
+              />
+              <button type="button" id="toggle-password" class="password-toggle" aria-label="Show or hide password">
+                <svg id="eye-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <div id="login-error" class="login-error hidden" role="alert"></div>
+
+          <button type="submit" class="btn btn-primary login-btn" id="btn-login">
+            Sign In
+          </button>
+        </form>
+
+        <p class="login-footer">
+          Only family members with an invitation can sign in.
+        </p>
+      </div>
+    </div>
+  </div><!-- /view-login -->
+
+
+  <!-- ═══════════════════════════════════════════════
+       TIMELINE VIEW (Home)
+  ════════════════════════════════════════════════ -->
+  <div id="view-timeline" class="view">
+
+    <!-- Header -->
+    <header class="app-header">
+      <div class="header-logo" aria-hidden="true">🌱</div>
+      <div class="header-title">
+        <h1>OT Journal</h1>
+        <p id="session-count-label">Loading…</p>
+      </div>
+      <div class="header-actions">
+        <button class="icon-btn" id="btn-toggle-search" aria-label="Toggle search and filters" title="Search &amp; filter">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </button>
+        <button class="icon-btn" id="btn-signout" aria-label="Sign out" title="Sign out" style="color:var(--text-3);">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Search / Filter Bar -->
+    <div class="search-bar hidden" id="search-bar" role="search">
+      <div class="search-input-wrap">
+        <span class="search-icon" aria-hidden="true">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </span>
+        <input type="search" id="search-input" placeholder="Search activities, notes, therapist…" autocomplete="off" spellcheck="false" />
+        <button class="search-clear" id="search-clear" aria-label="Clear search">✕</button>
+      </div>
+      <div class="tag-filter-row" id="tag-filter-row" aria-label="Filter by tag" role="group"></div>
+    </div>
+
+    <!-- Timeline list -->
+    <main id="timeline-main">
+      <div id="timeline-list" class="timeline" role="list" aria-label="Session entries"></div>
+    </main>
+
+    <!-- FAB: Add session -->
+    <button class="fab" id="fab-add" aria-label="Add new session entry" title="Add session">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+    </button>
+
+  </div><!-- /view-timeline -->
+
+
+  <!-- ═══════════════════════════════════════════════
+       DETAIL VIEW
+  ════════════════════════════════════════════════ -->
+  <div id="view-detail" class="view">
+
+    <header class="detail-header">
+      <button class="icon-btn" id="btn-back" aria-label="Back to timeline">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+      </button>
+      <span style="font-size:.9rem;font-weight:700;color:var(--text-2);">Session Detail</span>
+      <div class="detail-header-actions">
+        <button class="icon-btn" id="btn-edit-entry" aria-label="Edit this session" title="Edit">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </button>
+        <button class="icon-btn" id="btn-delete-entry" aria-label="Delete this session" title="Delete" style="color:var(--danger)">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <div class="detail-hero" id="detail-hero">
+      <div class="detail-date-row">
+        <div class="detail-date-badge">
+          <div class="day" id="detail-day">--</div>
+          <div class="month-year" id="detail-month-year">--- ----</div>
+        </div>
+        <div class="detail-therapist-info">
+          <div class="detail-therapist-label">Therapist</div>
+          <div class="detail-therapist-name" id="detail-therapist">—</div>
+        </div>
+      </div>
+      <div class="detail-tags" id="detail-tags"></div>
+    </div>
+
+    <div class="detail-body">
+      <div>
+        <div class="detail-section-label"><span>🎯</span> Activities</div>
+        <div class="detail-text" id="detail-activities">—</div>
+      </div>
+      <div class="detail-divider"></div>
+      <div>
+        <div class="detail-section-label"><span>📋</span> Notes &amp; Recommendations</div>
+        <div class="detail-text" id="detail-notes">—</div>
+      </div>
+      <div id="detail-media-section">
+        <div class="detail-section-label"><span>📷</span> Media</div>
+        <div class="media-gallery-grid" id="detail-media-grid"></div>
+      </div>
+      <div style="padding-top:4px;">
+        <span style="font-size:.75rem;color:var(--text-3);font-weight:600;">Logged on </span>
+        <span id="detail-created-at" style="font-size:.75rem;color:var(--text-3);font-weight:600;"></span>
+      </div>
+    </div>
+
+  </div><!-- /view-detail -->
+
+</div><!-- /app -->
+
+
+<!-- ═══════════════════════════════════════════════
+     ADD / EDIT MODAL
+════════════════════════════════════════════════ -->
+<div class="modal-backdrop" id="modal-entry" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <div class="modal" id="modal-entry-panel">
+    <span class="modal-drag-handle" aria-hidden="true"></span>
+
+    <div class="modal-header">
+      <span class="modal-title" id="modal-title">New Session</span>
+      <button class="modal-close" id="modal-close" aria-label="Close">✕</button>
+    </div>
+
+    <div class="modal-body" id="modal-body">
+      <form id="entry-form" novalidate>
+
+        <!-- Date -->
+        <div class="form-group">
+          <label class="form-label" for="field-date">
+            <span class="label-icon">📅</span> Date
+          </label>
+          <input type="date" class="form-control" id="field-date" required />
+        </div>
+
+        <!-- Therapist -->
+        <div class="form-group">
+          <label class="form-label" for="field-therapist">
+            <span class="label-icon">👤</span> Therapist Name
+          </label>
+          <div class="autocomplete-wrap">
+            <input
+              type="text"
+              class="form-control"
+              id="field-therapist"
+              placeholder="e.g. Ms. Sarah"
+              autocomplete="off"
+              required
+            />
+            <div class="autocomplete-dropdown" id="therapist-dropdown" role="listbox" aria-label="Previous therapist names"></div>
+          </div>
+        </div>
+
+        <!-- Activities -->
+        <div class="form-group">
+          <label class="form-label" for="field-activities">
+            <span class="label-icon">🎯</span> Activities
+          </label>
+          <textarea
+            class="form-control"
+            id="field-activities"
+            placeholder="What was done in this session? e.g. pegboard sorting, scissors practice, bean bag toss…"
+            rows="4"
+          ></textarea>
+        </div>
+
+        <!-- Notes & Recommendations -->
+        <div class="form-group">
+          <label class="form-label" for="field-notes">
+            <span class="label-icon">📋</span> Notes &amp; Recommendations
+          </label>
+          <textarea
+            class="form-control"
+            id="field-notes"
+            placeholder="Therapist's notes, home follow-up ideas, observations…"
+            rows="4"
+          ></textarea>
+        </div>
+
+        <!-- Tags -->
+        <div class="form-group">
+          <label class="form-label" for="tags-text-input">
+            <span class="label-icon">🏷️</span> Tags
+            <span style="font-weight:500;font-size:.75rem;color:var(--text-3);text-transform:none;letter-spacing:0;">(optional)</span>
+          </label>
+          <div class="tags-input-wrap" id="tags-input-wrap">
+            <input
+              type="text"
+              class="tags-text-input"
+              id="tags-text-input"
+              placeholder="Type a tag, then Enter or comma…"
+              autocomplete="off"
+            />
+          </div>
+          <p class="form-hint">e.g. fine motor · sensory · handwriting · bilateral coordination</p>
+        </div>
+
+        <!-- Media Upload -->
+        <div class="form-group">
+          <label class="form-label">
+            <span class="label-icon">📷</span> Photos &amp; Videos
+            <span style="font-weight:500;font-size:.75rem;color:var(--text-3);text-transform:none;letter-spacing:0;">(optional)</span>
+          </label>
+          <div class="media-upload-zone" id="media-upload-zone">
+            <input
+              type="file"
+              id="media-file-input"
+              accept="image/*,video/*"
+              multiple
+              aria-label="Select photos or videos"
+            />
+            <div class="upload-icon" aria-hidden="true">📎</div>
+            <div class="upload-label">Tap to add photos or videos</div>
+            <div class="upload-sub">JPG, PNG, MP4, MOV — multiple files OK</div>
+          </div>
+          <div class="media-preview-grid" id="media-preview-grid"></div>
+        </div>
+
+      </form>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-secondary" id="btn-cancel" type="button">Cancel</button>
+      <button class="btn btn-primary" id="btn-save" type="button">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+        Save Session
+      </button>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════
+     DELETE CONFIRM DIALOG
+════════════════════════════════════════════════ -->
+<div class="confirm-dialog" id="confirm-dialog" role="alertdialog" aria-modal="true" aria-labelledby="confirm-title">
+  <div class="confirm-box">
+    <div class="confirm-icon" aria-hidden="true">🗑️</div>
+    <div class="confirm-title" id="confirm-title">Delete Session?</div>
+    <div class="confirm-text">This session and all its attached media will be permanently deleted. This can't be undone.</div>
+    <div class="confirm-actions">
+      <button class="btn btn-secondary flex-1" id="confirm-cancel">Keep it</button>
+      <button class="btn btn-danger flex-1" id="confirm-delete">Delete</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════
+     LIGHTBOX
+════════════════════════════════════════════════ -->
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Media viewer">
+  <button class="lightbox-close" id="lightbox-close" aria-label="Close viewer">✕</button>
+  <button class="lightbox-nav prev" id="lightbox-prev" aria-label="Previous item">‹</button>
+  <button class="lightbox-nav next" id="lightbox-next" aria-label="Next item">›</button>
+  <div id="lightbox-content"></div>
+  <div class="lightbox-counter" id="lightbox-counter"></div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════
+     LOADING OVERLAY
+════════════════════════════════════════════════ -->
+<div id="app-loading" class="app-loading">
+  <div class="loading-spinner-wrap">
+    <div class="loading-logo">🌱</div>
+    <div class="loading-spinner"></div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════
+     TOAST CONTAINER
+════════════════════════════════════════════════ -->
+<div class="toast-container" id="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+
+<!-- Supabase JS SDK (UMD — adds `supabase` to window) -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- Your Supabase credentials -->
+<script src="config.js"></script>
+<!-- App logic -->
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+# OT Tracker — Git Ignore
+
+# config.js (included so static hosting on Vercel works out of the box)
+
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor directories
+.vscode/
+.idea/
+
+# Node (if you ever add a build step)
+node_modules/
