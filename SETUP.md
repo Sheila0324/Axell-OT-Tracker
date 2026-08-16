@@ -149,7 +149,7 @@ Then create a **private** repository on GitHub:
 4. Copy the remote URL and run:
 
 ```bash
-git remote add origin https://github.com/YOUR_USERNAME/ot-tracker.git
+git remote add origin https://github.com/Sheila0324/Axell-OT-Tracker.git
 git branch -M main
 git push -u origin main
 ```
