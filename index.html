@@ -7,7 +7,10 @@
   <meta name="description" content="A private family journal for tracking occupational therapy sessions, activities, and progress." />
   <meta name="theme-color" content="#C97B4B" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="OT Journal" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%23C97B4B'/><text x='50' y='68' font-size='56' text-anchor='middle'>🌱</text></svg>" />
   <link rel="stylesheet" href="style.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -264,11 +267,22 @@
               type="text"
               class="tags-text-input"
               id="tags-text-input"
-              placeholder="Type a tag, then Enter or comma…"
+              placeholder="Type tag & press enter, or tap below…"
               autocomplete="off"
             />
           </div>
-          <p class="form-hint">e.g. fine motor · sensory · handwriting · bilateral coordination</p>
+          <div class="quick-tags-container" aria-label="Suggested tags">
+            <span class="quick-tag-label">Quick add:</span>
+            <div class="quick-tag-chips" id="quick-tag-chips">
+              <button type="button" class="quick-tag-btn" data-tag="fine motor">Fine Motor</button>
+              <button type="button" class="quick-tag-btn" data-tag="sensory">Sensory</button>
+              <button type="button" class="quick-tag-btn" data-tag="handwriting">Handwriting</button>
+              <button type="button" class="quick-tag-btn" data-tag="gross motor">Gross Motor</button>
+              <button type="button" class="quick-tag-btn" data-tag="bilateral">Bilateral</button>
+              <button type="button" class="quick-tag-btn" data-tag="visual motor">Visual Motor</button>
+              <button type="button" class="quick-tag-btn" data-tag="regulation">Regulation</button>
+            </div>
+          </div>
         </div>
 
         <!-- Media Upload -->

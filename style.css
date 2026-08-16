@@ -934,6 +934,74 @@ input[type="date"].form-control {
 
 .tags-text-input::placeholder { color: var(--text-3); }
 
+/* Quick Tag Chips (Mobile-friendly 1-tap tagging) */
+.quick-tags-container {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.quick-tag-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-3);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.quick-tag-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.quick-tag-btn {
+  height: 32px;
+  padding: 0 12px;
+  border-radius: var(--radius-full);
+  border: 1.5px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text-2);
+  font-size: 0.78rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  transition: all var(--transition);
+  touch-action: manipulation;
+  min-height: 32px;
+  min-width: auto;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.quick-tag-btn::before {
+  content: '+';
+  font-weight: 800;
+  font-size: 0.85rem;
+  color: var(--primary);
+}
+
+.quick-tag-btn:hover, .quick-tag-btn:active {
+  background: var(--primary-light);
+  border-color: var(--primary);
+  color: var(--primary-dark);
+  transform: scale(0.96);
+}
+
+.quick-tag-btn.selected {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: white;
+}
+
+.quick-tag-btn.selected::before {
+  content: '✓';
+  color: white;
+}
+
+
 /* Media upload zone */
 .media-upload-zone {
   border: 2px dashed var(--border);

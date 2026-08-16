@@ -671,12 +671,17 @@ function openModal(sessionId = null) {
     document.getElementById('field-date').value = todayString();
   }
 
+  const panel = document.getElementById('modal-entry-panel');
+  if (panel) panel.style.transform = '';
+
   document.getElementById('modal-entry').classList.add('open');
   document.body.style.overflow = 'hidden';
   setTimeout(() => document.getElementById('field-date').focus(), 350);
 }
 
 function closeModal() {
+  const panel = document.getElementById('modal-entry-panel');
+  if (panel) panel.style.transform = '';
   document.getElementById('modal-entry').classList.remove('open');
   document.body.style.overflow = '';
   resetForm();
@@ -746,12 +751,30 @@ function renderFormTags() {
     });
     wrap.insertBefore(badge, input);
   });
+
+  // Sync quick tag button states
+  document.querySelectorAll('.quick-tag-btn').forEach(btn => {
+    const tag = btn.dataset.tag.toLowerCase();
+    btn.classList.toggle('selected', state.formTags.includes(tag));
+  });
 }
 
 function addTag(raw) {
   const tag = raw.trim().toLowerCase().replace(/,+$/, '');
   if (!tag || state.formTags.includes(tag)) return;
   state.formTags.push(tag);
+  renderFormTags();
+}
+
+function toggleTag(raw) {
+  const tag = raw.trim().toLowerCase().replace(/,+$/, '');
+  if (!tag) return;
+  const idx = state.formTags.indexOf(tag);
+  if (idx >= 0) {
+    state.formTags.splice(idx, 1);
+  } else {
+    state.formTags.push(tag);
+  }
   renderFormTags();
 }
 
@@ -775,7 +798,16 @@ function initTagsInput() {
   });
 
   wrap.addEventListener('click', () => input.focus());
+
+  // Quick tag buttons tap listeners
+  document.querySelectorAll('.quick-tag-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      toggleTag(btn.dataset.tag);
+    });
+  });
 }
+
 
 // ─────────────────────────────────────────────────────────
 // 16. MEDIA UPLOAD
@@ -1205,6 +1237,46 @@ function wireEvents() {
 // 24. APP BOOTSTRAP
 // ─────────────────────────────────────────────────────────
 
+function initBottomSheetGesture() {
+  const panel = document.getElementById('modal-entry-panel');
+  const handle = panel?.querySelector('.modal-drag-handle');
+  if (!panel || !handle) return;
+
+  let startY = 0;
+  let currentY = 0;
+  let isDragging = false;
+
+  handle.addEventListener('touchstart', (e) => {
+    startY = e.touches[0].clientY;
+    currentY = startY;
+    isDragging = true;
+    panel.style.transition = 'none';
+  }, { passive: true });
+
+  window.addEventListener('touchmove', (e) => {
+    if (!isDragging) return;
+    currentY = e.touches[0].clientY;
+    const deltaY = currentY - startY;
+    if (deltaY > 0) {
+      panel.style.transform = `translateY(${deltaY}px)`;
+    }
+  }, { passive: true });
+
+  window.addEventListener('touchend', () => {
+    if (!isDragging) return;
+    isDragging = false;
+    panel.style.transition = '';
+    const deltaY = currentY - startY;
+    if (deltaY > 90) {
+      closeModal();
+    } else {
+      panel.style.transform = '';
+    }
+    startY = 0;
+    currentY = 0;
+  });
+}
+
 async function startApp() {
   // Load therapist names for autocomplete
   state.therapistNames = await dbLoadTherapists();
@@ -1216,6 +1288,7 @@ async function startApp() {
   initTherapistAutocomplete();
   initSearchBar();
   initKeyboard();
+  initBottomSheetGesture();
 
   // Show the timeline
   showView('view-timeline');
